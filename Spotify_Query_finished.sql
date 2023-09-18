@@ -135,7 +135,13 @@ ORDER BY released_year DESC
 --2022
 
 -- Top songs in playlist per player, Spotify, Apple, Deezer, Shazam
+ 
+SELECT track_name_clean, artist_s_name_clean, in_spotify_playlists
+FROM [Portfolio Project Database].[dbo].[spotify]
+ORDER BY CAST(in_spotify_playlists AS int) DESC
 
+--Get Lucky by Pharrell Williams, Nile Rodgers, Daft Punk top in Spotify Playlists 52,898
+ 
 SELECT track_name_clean, artist_s_name_clean, in_apple_playlists
 FROM [Portfolio Project Database].[dbo].[spotify]
 ORDER BY CAST(in_apple_playlists AS int) DESC
