@@ -18,11 +18,11 @@ ORDER BY streams DESC
 
 --Most streamed artist
 
-SELECT TOP(1)  artist_s_name_clean, streams
+SELECT Sum(streams) as The_Weeknd_streams
 FROM [Portfolio Project Database].[dbo].[spotify]
-ORDER BY streams DESC
+WHERE artist_s_name_clean = 'The Weeknd'
 
--- The Weeknd with 3703895074 streams
+-- The Weeknd with 14,185,552,870 streams
 
 --Leased streamed artist
 
@@ -105,7 +105,7 @@ PRINT @perc
 
 --22% of the songs use C
 
---Most danceable, Highest energy, liveliness, speechiness
+--Most danceable, Highest energy, speechiness
 
 SELECT danceability, track_name_clean, [artist_s_name_clean]
 FROM [Portfolio Project Database].[dbo].[spotify]
