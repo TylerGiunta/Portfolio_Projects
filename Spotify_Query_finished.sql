@@ -130,9 +130,9 @@ ORDER BY speechiness DESC
 SELECT released_year, SUM(streams) AS 'Stream per year'
 FROM [Portfolio Project Database].[dbo].[spotify]
 GROUP BY released_year
-ORDER BY released_year DESC
+ORDER BY [Stream per year] DESC
 
---2022
+--2022 (115,410,693,881 streams) Current year 2023 in 6th place
 
 -- Top songs in playlist per player, Spotify, Apple, Deezer, Shazam
  
