@@ -1,0 +1,252 @@
+--DVD Rental Code
+--How many and what are the categories?
+SELECT COUNT(*)
+FROM category
+
+SELECT *
+FROM category
+
+--How many actors/actresses are there?
+SELECT COUNT(*)
+FROM actor
+
+--Join the film and film_actor tables 
+SELECT film.film_id, title, release_year, actor_id
+FROM film
+INNER JOIN film_actor
+	ON film.film_id = film_actor.film_id
+
+--Join three tables fIlm, film_actor, actor
+SELECT *
+FROM film AS a
+INNER JOIN film_actor AS b
+	ON a.film_id = b.film_id
+INNER JOIN actor AS c
+	ON c.actor_id = b.actor_id
+
+--Find out how many movies each actor has been in
+SELECT COUNT(first_name), first_name, last_name
+FROM film AS a
+INNER JOIN film_actor AS b
+	ON a.film_id = b.film_id
+INNER JOIN actor AS c
+	ON c.actor_id = b.actor_id
+GROUP BY first_name, last_name
+
+--Which actor/Actress acted in the most movies?
+SELECT COUNT(first_name), first_name, last_name
+FROM film AS a
+INNER JOIN film_actor AS b
+	ON a.film_id = b.film_id
+INNER JOIN actor AS c
+	ON c.actor_id = b.actor_id
+GROUP BY first_name, last_name
+ORDER BY COUNT(first_name) DESC
+
+--May be wrong if there are multiple people with the same first name
+
+--Ordered by first name to check if similar first names had different counts and they did
+SELECT COUNT(first_name), first_name, last_name
+FROM film AS a
+INNER JOIN film_actor AS b
+	ON a.film_id = b.film_id
+INNER JOIN actor AS c
+	ON c.actor_id = b.actor_id
+GROUP BY first_name, last_name
+ORDER BY (first_name) DESC
+
+--No double names find which actor/actress played in the most/least movies. Most
+SELECT COUNT(first_name), first_name, last_name
+FROM film AS a
+INNER JOIN film_actor AS b
+	ON a.film_id = b.film_id
+INNER JOIN actor AS c
+	ON c.actor_id = b.actor_id
+GROUP BY first_name, last_name
+ORDER BY COUNT(first_name) DESC
+
+--Least
+SELECT COUNT(first_name), first_name, last_name
+FROM film AS a
+INNER JOIN film_actor AS b
+	ON a.film_id = b.film_id
+INNER JOIN actor AS c
+	ON c.actor_id = b.actor_id
+GROUP BY first_name, last_name
+ORDER BY COUNT(first_name)
+
+--Longest Film top 3
+SELECT title, length, film_id, release_year
+FROM film
+ORDER BY length DESC
+LIMIT 3
+
+--Shortest Films 
+SELECT title, length, film_id, release_year
+FROM film
+ORDER BY length
+LIMIT 3
+
+--Find any empty districts
+SELECT *
+FROM address
+WHERE district = ''
+
+--Are there any City ID's that match
+SELECT COUNT(city_id) 
+FROM address
+GROUP BY city_id 
+ORDER BY COUNT(city_id) DESC
+
+--How many different countries does this data pull from
+SELECT COUNT(country)
+FROM country
+
+--Which customer ID has rented the most dvd's
+SELECT COUNT(a.customer_id), a.customer_id
+FROM rental AS a
+JOIN customer AS b
+	ON a.customer_id = b.customer_id
+GROUP BY a.customer_id
+ORDER BY COUNT(a.customer_id) DESC
+
+--Who is it
+SELECT customer_id, first_name, last_name
+FROM customer
+WHERE customer_id = 148
+
+--How much did they spend?
+SELECT SUM(amount)
+FROM customer AS a
+JOIN payment AS b
+	ON a.customer_id = b.customer_id
+WHERE a.customer_id = 148
+
+--How much did they spend on average?
+SELECT AVG(amount)
+FROM customer AS a
+JOIN payment AS b
+	ON a.customer_id = b.customer_id
+WHERE a.customer_id = 148
+
+--Most they spent
+SELECT MAX(amount)
+FROM payment
+WHERE customer_id = 148
+
+--Least?
+SELECT MAX(amount)
+FROM payment
+WHERE customer_id = 148
+
+--How many stores 
+SELECT *
+FROM store
+
+--Total sales for store 1
+SELECT SUM(amount)
+FROM payment
+WHERE staff_id = 1
+
+--Total sales for store 2
+SELECT SUM(amount)
+FROM payment
+WHERE staff_id = 2
+
+--Daily Sales for store 1 ordered by date
+SELECT CAST(payment_date AS date), SUM(amount)
+FROM payment
+WHERE staff_id = 1
+GROUP BY payment_date
+ORDER BY payment_date
+
+--Can check all answers for store 2 by changing the staff_id = 2
+
+-- Total amounts each customer has spent at store 1
+SELECT SUM(amount) AS Total_Spent, customer_id
+FROM payment
+WHERE staff_id = 1
+GROUP BY customer_id
+ORDER BY total_Spent DESC
+
+-- Total amount customers spent per customer at store 2
+SELECT SUM(amount) AS Total_Spent, customer_id
+FROM payment
+WHERE staff_id = 2
+GROUP BY customer_id
+ORDER BY total_Spent DESC
+
+--Right clicked on the payment_date under columns went to properties and switched it from DATETIME to DATE.
+
+--On which days did the stores have sales data
+SELECT payment_date
+FROM payment
+GROUP BY payment_date
+ORDER BY payment_date
+
+--Weekly sales numbers for store 1
+SELECT SUM(amount)
+FROM payment
+WHERE payment_date BETWEEN '2007-02-14' AND '2007-02-21'
+AND staff_id = 1
+
+SELECT SUM(amount)
+FROM payment
+WHERE payment_date BETWEEN '2007-03-16' AND '2007-03-23'
+AND staff_id = 1
+
+SELECT SUM(amount)
+FROM payment
+WHERE payment_date BETWEEN '2007-04-05' AND '2007-04-12'
+AND staff_id = 1
+
+SELECT SUM(amount)
+FROM payment
+WHERE payment_date BETWEEN '2007-04-26' AND '2007-04-30'
+AND staff_id = 1
+
+SELECT SUM(amount)
+FROM payment
+WHERE payment_date = '2007-05-14'
+AND staff_id = 1
+
+--Average sales for week one 
+SELECT AVG(amount)
+FROM payment
+WHERE payment_date BETWEEN '2007-02-14' AND '2007-02-21'
+
+
+--Average sales first month
+SELECT AVG(amount)
+FROM payment
+WHERE payment_date BETWEEN '2007-02-14' AND '2007-02-21'
+
+--Total sales for first month store 1
+SELECT SUM(amount)
+FROM payment
+WHERE payment_date BETWEEN '2007-02-14' AND '2007-02-28'
+AND staff_id = 1
+
+--Total sales for first year store 1
+SELECT SUM(amount)
+FROM payment
+WHERE payment_date BETWEEN '2007-02-14' AND '2007-05-14'
+AND staff_id = 1
+
+--How many languages are we looking at
+SELECT *
+FROM language
+
+--Identify the staff
+SELECT *
+FROM staff
+
+--How many different postal codes bought from the stores
+SELECT COUNT(DISTINCT postal_code)
+FROM address
+
+--How many different cities bought from the stores
+SELECT COUNT(DISTINCT city)
+FROM city
+
+-- 2 less on the postal code which could mean missing data 
