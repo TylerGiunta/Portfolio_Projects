@@ -55,6 +55,27 @@ INNER JOIN actor AS c
 GROUP BY first_name, last_name
 ORDER BY (first_name) DESC
 
+--Creat a graph showing the amount of movies the top ten actors/actress have been in
+SELECT COUNT(first_name), first_name, last_name, CONCAT(first_name, ' ', last_name) AS first_last
+FROM film AS a
+INNER JOIN film_actor AS b
+    ON a.film_id = b.film_id
+INNER JOIN actor AS c
+    ON c.actor_id = b.actor_id
+GROUP BY first_name, last_name
+ORDER BY COUNT(first_name) DESC
+LIMIT 10
+
+--Which movies was the number 1 actor/actress in
+SELECT title, first_name, last_name
+FROM film AS a
+INNER JOIN film_actor AS b
+    ON a.film_id = b.film_id
+INNER JOIN actor AS c
+    ON c.actor_id = b.actor_id
+WHERE first_name = 'Susan'
+AND last_name = 'Davis'
+
 --No double names find which actor/actress played in the most/least movies. Most
 SELECT COUNT(first_name), first_name, last_name
 FROM film AS a
