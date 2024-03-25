@@ -18,28 +18,28 @@ INNER JOIN film_actor
 
 --Join three tables fIlm, film_actor, actor
 SELECT *
-FROM film AS a
-INNER JOIN film_actor AS b
-	ON a.film_id = b.film_id
-INNER JOIN actor AS c
-	ON c.actor_id = b.actor_id
+FROM film AS fil
+INNER JOIN film_actor AS fa
+	ON fil.film_id = fa.film_id
+INNER JOIN actor AS act
+	ON fa.actor_id = act.actor_id
 
 --Find out how many movies each actor has been in
 SELECT COUNT(first_name), first_name, last_name
-FROM film AS a
-INNER JOIN film_actor AS b
-	ON a.film_id = b.film_id
-INNER JOIN actor AS c
-	ON c.actor_id = b.actor_id
+FROM film AS fil
+INNER JOIN film_actor AS fa
+	ON fil.film_id = fa.film_id
+INNER JOIN actor AS act
+	ON fa.actor_id = act.actor_id
 GROUP BY first_name, last_name
 
 --Which actor/Actress acted in the most movies?
 SELECT COUNT(first_name), first_name, last_name
-FROM film AS a
-INNER JOIN film_actor AS b
-	ON a.film_id = b.film_id
-INNER JOIN actor AS c
-	ON c.actor_id = b.actor_id
+FROM film AS fil
+INNER JOIN film_actor AS fa
+	ON fil.film_id = fa.film_id
+INNER JOIN actor AS act
+	ON act.actor_id = fa.actor_id
 GROUP BY first_name, last_name
 ORDER BY COUNT(first_name) DESC
 
@@ -47,52 +47,52 @@ ORDER BY COUNT(first_name) DESC
 
 --Ordered by first name to check if similar first names had different counts and they did
 SELECT COUNT(first_name), first_name, last_name
-FROM film AS a
-INNER JOIN film_actor AS b
-	ON a.film_id = b.film_id
-INNER JOIN actor AS c
-	ON c.actor_id = b.actor_id
+FROM film AS fil
+INNER JOIN film_actor AS fa
+	ON fil.film_id = fa.film_id
+INNER JOIN actor AS act
+	ON act.actor_id = fa.actor_id
 GROUP BY first_name, last_name
 ORDER BY (first_name) DESC
 
 --Creat a graph showing the amount of movies the top ten actors/actress have been in
 SELECT COUNT(first_name), first_name, last_name, CONCAT(first_name, ' ', last_name) AS first_last
-FROM film AS a
-INNER JOIN film_actor AS b
-    ON a.film_id = b.film_id
-INNER JOIN actor AS c
-    ON c.actor_id = b.actor_id
+FROM film AS fil
+INNER JOIN film_actor AS fa
+    ON fil.film_id = fa.film_id
+INNER JOIN actor AS act
+    ON act.actor_id = fa.actor_id
 GROUP BY first_name, last_name
 ORDER BY COUNT(first_name) DESC
 LIMIT 10
 
+
 --Which movies was the number 1 actor/actress in
-SELECT title, first_name, last_name
-FROM film AS a
-INNER JOIN film_actor AS b
-    ON a.film_id = b.film_id
-INNER JOIN actor AS c
-    ON c.actor_id = b.actor_id
-WHERE first_name = 'Susan'
-AND last_name = 'Davis'
+SELECT title, first_name, last_name, act.actor_id
+FROM film AS fil
+INNER JOIN film_actor AS fa
+    ON fil.film_id = fa.film_id
+INNER JOIN actor AS act
+    ON act.actor_id = fa.actor_id
+WHERE act.actor_id = 101
 
 --No double names find which actor/actress played in the most/least movies. Most
 SELECT COUNT(first_name), first_name, last_name
-FROM film AS a
-INNER JOIN film_actor AS b
-	ON a.film_id = b.film_id
-INNER JOIN actor AS c
-	ON c.actor_id = b.actor_id
+FROM film AS fil
+INNER JOIN film_actor AS fa
+	ON fil.film_id = fa.film_id
+INNER JOIN actor AS act
+	ON act.actor_id = fa.actor_id
 GROUP BY first_name, last_name
 ORDER BY COUNT(first_name) DESC
 
 --Least
 SELECT COUNT(first_name), first_name, last_name
-FROM film AS a
-INNER JOIN film_actor AS b
-	ON a.film_id = b.film_id
-INNER JOIN actor AS c
-	ON c.actor_id = b.actor_id
+FROM film AS fil
+INNER JOIN film_actor AS fa
+	ON fil.film_id = fa.film_id
+INNER JOIN actor AS act
+	ON act.actor_id = fa.actor_id
 GROUP BY first_name, last_name
 ORDER BY COUNT(first_name)
 
@@ -124,12 +124,12 @@ SELECT COUNT(country)
 FROM country
 
 --Which customer ID has rented the most dvd's
-SELECT COUNT(a.customer_id), a.customer_id
-FROM rental AS a
-JOIN customer AS b
-	ON a.customer_id = b.customer_id
-GROUP BY a.customer_id
-ORDER BY COUNT(a.customer_id) DESC
+SELECT COUNT(ren.customer_id), ren.customer_id
+FROM rental AS ren
+JOIN customer AS cus
+	ON ren.customer_id = cus.customer_id
+GROUP BY ren.customer_id
+ORDER BY COUNT(ren.customer_id) DESC
 
 --Who is it
 SELECT customer_id, first_name, last_name
@@ -138,17 +138,17 @@ WHERE customer_id = 148
 
 --How much did they spend?
 SELECT SUM(amount)
-FROM customer AS a
-JOIN payment AS b
-	ON a.customer_id = b.customer_id
-WHERE a.customer_id = 148
+FROM customer AS cus
+JOIN payment AS pay
+	ON cus.customer_id = pay.customer_id
+WHERE cus.customer_id = 148
 
 --How much did they spend on average?
 SELECT AVG(amount)
-FROM customer AS a
-JOIN payment AS b
-	ON a.customer_id = b.customer_id
-WHERE a.customer_id = 148
+FROM customer AS cus
+JOIN payment AS pay
+	ON cus.customer_id = pay.customer_id
+WHERE cus.customer_id = 148
 
 --Most they spent
 SELECT MAX(amount)
@@ -236,7 +236,6 @@ SELECT AVG(amount)
 FROM payment
 WHERE payment_date BETWEEN '2007-02-14' AND '2007-02-21'
 
-
 --Average sales first month
 SELECT AVG(amount)
 FROM payment
@@ -271,3 +270,181 @@ SELECT COUNT(DISTINCT city)
 FROM city
 
 -- 2 less on the postal code which could mean missing data 
+
+--How many actors in each genre
+SELECT COUNT(act.actor_id), name
+FROM category AS cat
+INNER JOIN film_category AS fc
+    ON cat.category_id = fc.category_id
+INNER JOIN film
+    ON film.film_id = fc.film_id
+RIGHT JOIN film_actor AS fa
+	on fa.film_id = film.film_id
+INNER JOIN actor AS act
+	on act.actor_id = fa.actor_id
+GROUP BY cat.name
+ORDER BY COUNT(fa.actor_id) DESC
+
+--Which actors/actresses acted in at least five Horror movies
+SELECT name, fa.actor_id, act.first_name, act.last_name, COUNT (*)
+FROM category AS cat
+INNER JOIN film_category AS fc
+    ON cat.category_id = fc.category_id
+INNER JOIN film 
+    ON film.film_id = fc.film_id
+INNER JOIN film_actor AS fa
+	on film.film_id = fa.film_id
+INNER JOIN actor AS act
+	on act.actor_id = fa.actor_id
+WHERE name = 'Horror'
+GROUP BY name, act.first_name, fa.actor_id, act.last_name
+HAVING COUNT(*)>5
+ORDER BY COUNT (*) DESC
+
+--Who made the most horror movies
+SELECT name, fa.actor_id, act.first_name, act.last_name, COUNT (*)
+FROM category AS cat
+INNER JOIN film_category AS fc
+    ON cat.category_id = fc.category_id
+INNER JOIN film 
+    ON film.film_id = fc.film_id
+INNER JOIN film_actor AS fa
+	on film.film_id = fa.film_id
+INNER JOIN actor AS act
+	on act.actor_id = fa.actor_id
+WHERE name = 'Horror'
+GROUP BY name, act.first_name, fa.actor_id, act.last_name
+ORDER BY COUNT (*) DESC
+LIMIT 1
+
+--If you wanted to find the different genres just switch out "Horror" with genre name
+
+--Which actors/actresses played in at least five movies per genre.
+SELECT name, fa.actor_id, act.first_name, act.last_name, COUNT (*)
+FROM category AS cat
+INNER JOIN film_category AS fc
+    ON cat.category_id = fc.category_id
+INNER JOIN film AS film
+    ON film.film_id = fc.film_id
+INNER JOIN film_actor AS fa
+	on fa.film_id = film.film_id
+INNER JOIN actor AS act
+	on act.actor_id = fa.actor_id
+GROUP BY name, act.first_name, fa.actor_id, act.last_name
+HAVING COUNT(*)>5
+ORDER BY COUNT (*) DESC
+
+--Which customers are from which countries
+SELECT country.country_id, country.country, customer.first_name, customer.last_name
+FROM country
+INNER JOIN city
+    ON country.country_id = city.country_id
+INNER JOIN address
+    ON city.city_id = address.city_id
+INNER JOIN customer
+	on address.address_id = customer.customer_id
+ORDER BY country.country
+
+--Country with the most customers
+SELECT country.country_id, country.country, COUNT(*)
+FROM country
+INNER JOIN city
+    ON country.country_id = city.country_id
+INNER JOIN address
+    ON city.city_id = address.city_id
+INNER JOIN customer
+	on address.address_id = customer.customer_id
+GROUP BY country.country_id, country.country
+ORDER BY COUNT(*) DESC
+LIMIT 1
+
+--Country with the least customers
+SELECT country.country_id, country.country, COUNT(*)
+FROM country
+INNER JOIN city
+    ON country.country_id = city.country_id
+INNER JOIN address
+    ON city.city_id = address.city_id
+INNER JOIN customer
+	on address.address_id = customer.customer_id
+GROUP BY country.country_id, country.country
+ORDER BY COUNT(*)
+LIMIT 1
+
+--How many customers from each US State
+SELECT country.country_id, country.country, address.district, COUNT(*)
+FROM country
+INNER JOIN city
+    ON country.country_id = city.country_id
+INNER JOIN address
+    ON city.city_id = address.city_id
+INNER JOIN customer
+    ON address.address_id = customer.customer_id
+GROUP BY country.country_id, country.country, address.district
+HAVING country = 'United States'
+ORDER BY COUNT(*) DESC
+
+-- Which cities do we have the most customers
+SELECT country.country_id, country.country, address.district, city.city, COUNT(*)
+FROM country
+INNER JOIN city
+    ON country.country_id = city.country_id
+INNER JOIN address
+    ON city.city_id = address.city_id
+INNER JOIN customer
+	on address.address_id = customer.customer_id
+GROUP BY country.country_id, country.country, address.district, city.city
+ORDER BY COUNT(*) DESC
+
+--Which store stocks the most Sci-Fi movies
+SELECT store_id, name, COUNT(*)
+FROM rental
+INNER JOIN inventory
+	ON rental.inventory_id = inventory.inventory_id
+INNER JOIN film_category
+	ON inventory.film_id = film_category.film_id
+INNER JOIN category
+	ON film_category.category_id = category.category_id
+INNER JOIN film
+	ON film_category.film_id = film.film_id
+GROUP BY store_id, name
+HAVING name = 'Sci-Fi'
+
+--Which US city rents the most horror movies
+SELECT country, district, name, city, COUNT(*)
+FROM country
+INNER JOIN city
+    ON country.country_id = city.country_id
+INNER JOIN address
+    ON city.city_id = address.city_id
+INNER JOIN customer
+	ON address.address_id = customer.customer_id
+INNER JOIN rental
+	ON customer.customer_id = rental.customer_id
+INNER JOIN inventory
+	ON rental.inventory_id = inventory.inventory_id
+INNER JOIN film_category
+	ON inventory.film_id = film_category.film_id
+INNER JOIN category
+	ON film_category.category_id = category.category_id
+INNER JOIN film
+	ON film_category.film_id = film.film_id
+WHERE country = 'United States'
+AND name = 'Horror'
+GROUP BY country, district, name, city
+ORDER BY COUNT(*) DESC
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
