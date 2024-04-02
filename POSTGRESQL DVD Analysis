@@ -335,100 +335,101 @@ HAVING COUNT(*)>5
 ORDER BY COUNT (*) DESC
 
 --Which customers are from which countries
-SELECT country.country_id, country.country, customer.first_name, customer.last_name
-FROM country
+SELECT co.country_id, co.country, cus.first_name, cus.last_name
+FROM country AS co
 INNER JOIN city
-    ON country.country_id = city.country_id
-INNER JOIN address
-    ON city.city_id = address.city_id
-INNER JOIN customer
-	on address.address_id = customer.customer_id
-ORDER BY country.country
+    ON co.country_id = city.country_id
+INNER JOIN address AS add
+    ON city.city_id = add.city_id
+INNER JOIN customer AS cus
+	on add.address_id = cus.customer_id
+ORDER BY co.country
 
 --Country with the most customers
-SELECT country.country_id, country.country, COUNT(*)
-FROM country
+SELECT co.country_id, co.country, COUNT(*)
+FROM country AS co
 INNER JOIN city
-    ON country.country_id = city.country_id
-INNER JOIN address
-    ON city.city_id = address.city_id
-INNER JOIN customer
-	on address.address_id = customer.customer_id
-GROUP BY country.country_id, country.country
+    ON co.country_id = city.country_id
+INNER JOIN address AS add
+    ON city.city_id = add.city_id
+INNER JOIN customer AS cus
+	on add.address_id = cus.customer_id
+GROUP BY co.country_id, co.country
 ORDER BY COUNT(*) DESC
 LIMIT 1
 
 --Country with the least customers
-SELECT country.country_id, country.country, COUNT(*)
-FROM country
+SELECT co.country_id, co.country, COUNT(*)
+FROM country AS co
 INNER JOIN city
-    ON country.country_id = city.country_id
-INNER JOIN address
-    ON city.city_id = address.city_id
-INNER JOIN customer
-	on address.address_id = customer.customer_id
-GROUP BY country.country_id, country.country
+    ON co.country_id = city.country_id
+INNER JOIN address AS add
+    ON city.city_id = add.city_id
+INNER JOIN customer AS cus
+	on add.address_id = cus.customer_id
+GROUP BY co.country_id, co.country
 ORDER BY COUNT(*)
 LIMIT 1
 
 --How many customers from each US State
-SELECT country.country_id, country.country, address.district, COUNT(*)
-FROM country
+SELECT co.country_id, co.country, add.district, COUNT(*)
+FROM country AS co
 INNER JOIN city
-    ON country.country_id = city.country_id
-INNER JOIN address
-    ON city.city_id = address.city_id
-INNER JOIN customer
-    ON address.address_id = customer.customer_id
-GROUP BY country.country_id, country.country, address.district
+    ON co.country_id = city.country_id
+INNER JOIN address AS add
+    ON city.city_id = add.city_id
+INNER JOIN customer AS cus
+    ON add.address_id = cus.customer_id
+GROUP BY co.country_id, co.country, add.district
 HAVING country = 'United States'
 ORDER BY COUNT(*) DESC
 
 -- Which cities do we have the most customers
-SELECT country.country_id, country.country, address.district, city.city, COUNT(*)
-FROM country
+SELECT co.country_id, co.country, add.district, city.city, COUNT(*)
+FROM country AS co
 INNER JOIN city
-    ON country.country_id = city.country_id
-INNER JOIN address
-    ON city.city_id = address.city_id
-INNER JOIN customer
-	on address.address_id = customer.customer_id
-GROUP BY country.country_id, country.country, address.district, city.city
+    ON co.country_id = city.country_id
+INNER JOIN address AS add
+    ON city.city_id = add.city_id
+INNER JOIN customer AS cus
+	on add.address_id = cus.customer_id
+GROUP BY co.country_id, co.country, add.district, city.city
 ORDER BY COUNT(*) DESC
 
 --Which store stocks the most Sci-Fi movies
 SELECT store_id, name, COUNT(*)
-FROM rental
-INNER JOIN inventory
-	ON rental.inventory_id = inventory.inventory_id
-INNER JOIN film_category
-	ON inventory.film_id = film_category.film_id
-INNER JOIN category
-	ON film_category.category_id = category.category_id
+FROM rental AS ren
+INNER JOIN inventory AS inv
+	ON ren.inventory_id = inv.inventory_id
+INNER JOIN film_category AS fc
+	ON inv.film_id = fc.film_id
+INNER JOIN category AS cat
+	ON fc.category_id = cat.category_id
 INNER JOIN film
-	ON film_category.film_id = film.film_id
+	ON fc.film_id = film.film_id
 GROUP BY store_id, name
 HAVING name = 'Sci-Fi'
+ORDER BY COUNT(*) DESC
 
 --Which US city rents the most horror movies
 SELECT country, district, name, city, COUNT(*)
-FROM country
+FROM country AS co
 INNER JOIN city
-    ON country.country_id = city.country_id
-INNER JOIN address
-    ON city.city_id = address.city_id
-INNER JOIN customer
-	ON address.address_id = customer.customer_id
-INNER JOIN rental
-	ON customer.customer_id = rental.customer_id
-INNER JOIN inventory
-	ON rental.inventory_id = inventory.inventory_id
-INNER JOIN film_category
-	ON inventory.film_id = film_category.film_id
-INNER JOIN category
-	ON film_category.category_id = category.category_id
+    ON co.country_id = city.country_id
+INNER JOIN address AS add
+    ON city.city_id = add.city_id
+INNER JOIN customer AS cus
+	ON add.address_id = cus.customer_id
+INNER JOIN rental AS ren
+	ON cus.customer_id = ren.customer_id
+INNER JOIN inventory AS inv
+	ON ren.inventory_id = inv.inventory_id
+INNER JOIN film_category AS fc
+	ON inv.film_id = fc.film_id
+INNER JOIN category AS cat
+	ON fc.category_id = cat.category_id
 INNER JOIN film
-	ON film_category.film_id = film.film_id
+	ON fc.film_id = film.film_id
 WHERE country = 'United States'
 AND name = 'Horror'
 GROUP BY country, district, name, city
